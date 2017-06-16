@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Record</string>
+    <string name="no_record_found">Oops! No Record Found!</string>
+    <string name="click_on_add">Click on Add button and Start Saving Records.</string>
+    <string name="add">ADD</string>
+    <string name="add_record">Add Record</string>
+    <string name="complete_task_to_exit">Please Complete record to exit.</string>
+    <string name="why">Why</string>
+    <string name="start">START</string>
+    <string name="stop">STOP</string>
+    <string name="complete">COMPLETE</string>
+</resources>

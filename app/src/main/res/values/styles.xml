@@ -1,0 +1,34 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="FabStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">16dp</item>
+        <item name="borderWidth">0dp</item>
+        <item name="elevation">6dp</item>
+        <item name="pressedTranslationZ">6dp</item>
+    </style>
+
+    <style name="TextAppearence.App.TextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">@dimen/title_size</item>
+    </style>
+
+    <style name="counterText">
+        <item name="android:textColor">#aa5353cc</item>
+    </style>
+
+    <style name="counterOverride">
+        <item name="android:textColor">#ff0000</item>
+    </style>
+
+    <dimen name="title_size">14sp</dimen>
+</resources>
