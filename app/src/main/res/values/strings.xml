@@ -15,4 +15,7 @@
     <string name="please_write">Please enter</string>
     <string name="error">Error</string>
     <string name="record_completed_successfully">Record Completed Successfully!</string>
+    <string name="dialog_error_title">Sorry!</string>
+    <string name="dialog_error_message">there was an error loading the records!</string>
+    <string name="dialog_action_ok">OK</string>
 </resources>

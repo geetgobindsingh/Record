@@ -1,17 +1,14 @@
-package com.geet.utilility.record.ui.addrecord.viewmodel;
+package com.geet.utilility.record.ui.addrecord.presenter;
 
 import android.os.Message;
 import android.support.annotation.Nullable;
 
-import com.geet.utilility.record.R;
 import com.geet.utilility.record.core.DatabaseHandler;
 import com.geet.utilility.record.core.DatabaseHandlerThread;
 import com.geet.utilility.record.data.model.Record;
 import com.geet.utilility.record.ui.addrecord.view.AddRecordActivity;
 import com.geet.utilility.record.ui.addrecord.view.IAddRecordView;
-import com.geet.utilility.record.ui.base.BaseActivity;
-import com.geet.utilility.record.ui.base.BaseViewModel;
-import com.geet.utilility.record.ui.base.IBaseView;
+import com.geet.utilility.record.ui.base.BasePresenter;
 
 import java.util.Date;
 import java.util.UUID;
@@ -20,16 +17,13 @@ import java.util.UUID;
  * Created by geetgobindsingh on 17/06/17.
  */
 
-public class AddRecordViewModel<V extends IAddRecordView> extends BaseViewModel<V> {
+public class AddRecordPresenter<V extends IAddRecordView> extends BasePresenter<V> {
 
     @Nullable
     private Long startDate;
-    private DatabaseHandlerThread mDatabaseHandlerThread;
-    private AddRecordActivity mAddRecordActivity;
 
-    public AddRecordViewModel() {
-        mDatabaseHandlerThread = new DatabaseHandlerThread(AddRecordViewModel.class.getSimpleName());
-        mDatabaseHandlerThread.start();
+    public AddRecordPresenter(V addRecordView) {
+        onAttach(addRecordView);
     }
 
     @Nullable
@@ -47,10 +41,11 @@ public class AddRecordViewModel<V extends IAddRecordView> extends BaseViewModel<
         record.setId(UUID.randomUUID().toString());
         record.setWhat(whatEditText);
         record.setWhy(whyEditText);
-        record.setWhen(new Date());
+        record.setCreatedDate(new Date());
         record.setRecordTime(totalTimeTaken);
 
-        mDatabaseHandlerThread.saveRecordAsync(record, new DatabaseHandler() {
+        DatabaseHandlerThread.getInstance()
+                .saveRecordAsync(record, new DatabaseHandler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
@@ -60,11 +55,11 @@ public class AddRecordViewModel<V extends IAddRecordView> extends BaseViewModel<
                         break;
                     }
                     case MSG_ERROR: {
-                            getView().recordSavingError(((Exception) msg.obj).getMessage());
-                        }
+                        getView().recordSavingError(((Exception) msg.obj).getMessage());
                         break;
                     }
                 }
-            });
+            }
+        });
     }
 }

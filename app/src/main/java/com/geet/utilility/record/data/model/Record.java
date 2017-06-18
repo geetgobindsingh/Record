@@ -18,7 +18,7 @@ public class Record {
 
     private String why;
 
-    private Date when;
+    private Date createdDate;
 
     private String recordTime;
 
@@ -34,8 +34,8 @@ public class Record {
         this.why = why;
     }
 
-    public void setWhen(Date when) {
-        this.when = when;
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
     public String getId() {
@@ -50,8 +50,8 @@ public class Record {
         return why;
     }
 
-    public Date getWhen() {
-        return when;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
     public String getRecordTime() {

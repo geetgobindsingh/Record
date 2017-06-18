@@ -12,8 +12,9 @@ import android.widget.Chronometer;
 import android.widget.EditText;
 
 import com.geet.utilility.record.R;
-import com.geet.utilility.record.ui.addrecord.viewmodel.AddRecordViewModel;
+import com.geet.utilility.record.ui.addrecord.presenter.AddRecordPresenter;
 import com.geet.utilility.record.ui.base.BaseActivity;
+import com.geet.utilility.record.ui.base.BasePresenter;
 import com.geet.utilility.record.utils.AppConstants;
 import com.geet.utilility.record.utils.CommonUtil;
 
@@ -23,7 +24,7 @@ public class AddRecordActivity extends BaseActivity implements IAddRecordView, V
     private static final String TAG = AddRecordActivity.class.getSimpleName();
     private static final int START_STATE = 0;
     private static final int PAUSE_STATE = 1;
-    private AddRecordViewModel addRecordViewModel;
+    private AddRecordPresenter mAddRecordPresenter;
     private StringBuffer timerString = new StringBuffer();
     private int buttonStatus;
     //endregion
@@ -40,9 +41,8 @@ public class AddRecordActivity extends BaseActivity implements IAddRecordView, V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_record);
 
-        //ViewHolder initialisation
-        addRecordViewModel = ViewModelProviders.of(this).get(AddRecordViewModel.class);
-        addRecordViewModel.attachView(AddRecordActivity.this);
+        //Presenter initialisation
+        initializePresenter();
 
         //view initialisation
         mWhatEditText = (EditText) findViewById(R.id.edit_text_what);
@@ -70,15 +70,15 @@ public class AddRecordActivity extends BaseActivity implements IAddRecordView, V
 
     private void startTimer() {
 
-        if (addRecordViewModel.getStartDate() == null) {
+        if (mAddRecordPresenter.getStartDate() == null) {
             // If the start date is not defined, it's a new ViewModel so set it.
             long startTime = SystemClock.elapsedRealtime();
-            addRecordViewModel.setStartDate(startTime);
+            mAddRecordPresenter.setStartDate(startTime);
             mChronometer.setBase(startTime);
         } else {
             // Otherwise the ViewModel has been retained, set the chronometer's base to the original
             // starting time.
-            mChronometer.setBase(addRecordViewModel.getStartDate());
+            mChronometer.setBase(mAddRecordPresenter.getStartDate());
         }
         mChronometer.start();
     }
@@ -125,7 +125,7 @@ public class AddRecordActivity extends BaseActivity implements IAddRecordView, V
             case R.id.button_complete: {
                 if(isValidDataEntered()) {
                     stopTimer();
-                    addRecordViewModel.saveRecord(mWhatEditText.getText().toString(), mWhyEditText.getText().toString(), mChronometer.getText().toString());
+                    mAddRecordPresenter.saveRecord(mWhatEditText.getText().toString(), mWhyEditText.getText().toString(), mChronometer.getText().toString());
                 }
                 break;
             }
@@ -141,8 +141,12 @@ public class AddRecordActivity extends BaseActivity implements IAddRecordView, V
 
     @Override
     public void onBackPressed() {
-        // do not allow user to go back without completing task - super.onBackPressed();
-        showToast(R.string.complete_task_to_exit);
+        if(mCompleteButton.isEnabled()) {
+            showToast(R.string.complete_task_to_exit);
+        }
+        else {
+            super.onBackPressed();
+        }
     }
     //endregion
 
@@ -197,6 +201,18 @@ public class AddRecordActivity extends BaseActivity implements IAddRecordView, V
 
     private void stopTimer() {
         mChronometer.stop();
+    }
+    //endregion
+
+    //region Overriding IView methods
+    @Override
+    public void initializePresenter() {
+        mAddRecordPresenter = new AddRecordPresenter(AddRecordActivity.this);
+    }
+
+    @Override
+    public AddRecordPresenter getPresenter() {
+        return mAddRecordPresenter;
     }
     //endregion
 }

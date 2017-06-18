@@ -5,4 +5,6 @@ package com.geet.utilility.record.ui.base;
  */
 
 public interface IView {
+    void initializePresenter();
+    BasePresenter getPresenter();
 }

@@ -1,5 +1,9 @@
 package com.geet.utilility.record.ui.base;
 
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -8,10 +12,15 @@ import android.widget.Toast;
  * Created by geetgobindsingh on 16/06/17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
+public abstract class BaseActivity extends AppCompatActivity implements IBaseView, LifecycleRegistryOwner {
 
-
+    LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
     private Toast mToast;
+
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
+    }
 
     public void showToast(@StringRes int message) {
         String toastMessage = getString(message);

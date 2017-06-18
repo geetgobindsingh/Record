@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.facebook.stetho.Stetho;
+import com.geet.utilility.record.core.DatabaseHandlerThread;
 import com.geet.utilility.record.data.DataBaseManager;
 
 /**
@@ -18,10 +19,17 @@ public class RecordApp extends Application {
         super.onCreate();
         sApplicationContext = getApplicationContext();
         DataBaseManager.getInstance();
+        DatabaseHandlerThread.getInstance().start();
 
         if(BuildConfig.DEBUG) {
             Stetho.initializeWithDefaults(this);
         }
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        DatabaseHandlerThread.getInstance().stop();
     }
 
     public static Context getAppContext() {

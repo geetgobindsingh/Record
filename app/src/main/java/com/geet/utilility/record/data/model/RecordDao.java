@@ -14,7 +14,7 @@ import java.util.List;
 @Dao
 public interface RecordDao {
 
-    @Query("SELECT * FROM record")
+    @Query("SELECT * FROM record ORDER BY date(createdDate) DESC")
     List<Record> getAllRecords();
 
     @Query("SELECT * FROM record where id = :id")

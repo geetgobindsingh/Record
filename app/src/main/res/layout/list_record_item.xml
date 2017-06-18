@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
+
+    <TextView
+        android:id="@+id/record_time_taken"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:gravity="end"
+        android:text="12:00"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/dummy_what_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/record_time_taken"
+        android:layout_marginLeft="4dp"
+        android:text="What: "
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/record_what"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/record_time_taken"
+        android:layout_marginLeft="4dp"
+        android:layout_toRightOf="@id/dummy_what_text"
+        android:textSize="16sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/dummy_why_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/record_what"
+        android:layout_marginLeft="4dp"
+        android:text="Why: "
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/record_why"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/record_what"
+        android:layout_marginLeft="4dp"
+        android:layout_toRightOf="@id/dummy_what_text"
+        android:textSize="16sp"
+        android:textStyle="italic" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/record_why"
+        android:layout_marginTop="4dp"
+        android:background="@color/colorPrimaryDark"/>
+
+</RelativeLayout>

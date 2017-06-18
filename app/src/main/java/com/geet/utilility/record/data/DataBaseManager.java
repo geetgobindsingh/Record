@@ -1,9 +1,12 @@
 package com.geet.utilility.record.data;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Room;
 
 import com.geet.utilility.record.RecordApp;
 import com.geet.utilility.record.data.model.Record;
+
+import java.util.List;
 
 /**
  * Created by geetgobindsingh on 16/06/17.
@@ -33,5 +36,9 @@ public class DataBaseManager {
 
     public void saveRecord(Record record) {
         appDatabase.getRecordDao().insert(record);
+    }
+
+    public List<Record> getAllRecords() {
+        return appDatabase.getRecordDao().getAllRecords();
     }
 }
