@@ -9,4 +9,10 @@
     <string name="start">START</string>
     <string name="stop">STOP</string>
     <string name="complete">COMPLETE</string>
+    <string name="pause">PAUSE</string>
+    <string name="resume">RESUME</string>
+    <string name="please_write_within_provided_limit">Please write within provided limit</string>
+    <string name="please_write">Please enter</string>
+    <string name="error">Error</string>
+    <string name="record_completed_successfully">Record Completed Successfully!</string>
 </resources>

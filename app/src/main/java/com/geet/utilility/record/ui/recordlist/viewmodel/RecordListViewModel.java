@@ -2,6 +2,7 @@ package com.geet.utilility.record.ui.recordlist.viewmodel;
 
 import android.support.annotation.Nullable;
 
+import com.geet.utilility.record.ui.base.BaseActivity;
 import com.geet.utilility.record.ui.base.BaseViewModel;
 
 /**
@@ -20,4 +21,5 @@ public class RecordListViewModel extends BaseViewModel {
     public void setStartDate(final long startDate) {
         this.startDate = startDate;
     }
+    
 }

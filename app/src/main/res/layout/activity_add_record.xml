@@ -65,7 +65,7 @@
             android:id="@+id/button_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="40dp"
             android:layout_below="@id/text_input_layout_why"
             android:weightSum="2">
 
@@ -86,9 +86,16 @@
                 android:layout_weight="1"
                 android:text="@string/complete"
                 android:background="@color/colorAccent"
-                android:textColor="@color/colorText"
-                android:layout_margin="4dp"/>
+                android:textColor="@color/colorDisabledText"
+                android:layout_margin="4dp"
+                android:enabled="false"/>
         </android.support.v7.widget.ButtonBarLayout>
 
+
+        <Chronometer
+            android:id="@+id/invisibleChronometer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"/>
     </RelativeLayout>
 </ScrollView>

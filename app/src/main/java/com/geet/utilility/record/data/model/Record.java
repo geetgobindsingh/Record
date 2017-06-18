@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity
 public class Record {
     @PrimaryKey
-    private long id;
+    private String id;
 
     private String what;
 
@@ -20,7 +20,9 @@ public class Record {
 
     private Date when;
 
-    public void setId(long id) {
+    private String recordTime;
+
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -36,7 +38,7 @@ public class Record {
         this.when = when;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -50,5 +52,13 @@ public class Record {
 
     public Date getWhen() {
         return when;
+    }
+
+    public String getRecordTime() {
+        return recordTime;
+    }
+
+    public void setRecordTime(String recordTime) {
+        this.recordTime = recordTime;
     }
 }

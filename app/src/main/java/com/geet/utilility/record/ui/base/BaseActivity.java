@@ -8,14 +8,10 @@ import android.widget.Toast;
  * Created by geetgobindsingh on 16/06/17.
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
 
 
     private Toast mToast;
-
-
-
-
 
     public void showToast(@StringRes int message) {
         String toastMessage = getString(message);
@@ -26,4 +22,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         mToast.show();
     }
+
+    public void showToast(String message) {
+        if (mToast == null) {
+            mToast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        } else {
+            mToast.setText(message);
+        }
+        mToast.show();
+    }
+
 }
