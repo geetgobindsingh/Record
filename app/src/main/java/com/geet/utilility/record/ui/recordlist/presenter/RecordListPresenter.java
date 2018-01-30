@@ -25,7 +25,6 @@ public class RecordListPresenter<V extends IRecordListView> extends BasePresente
     private boolean mFirstLoad = true;
 
     private final MutableLiveData<ArrayList<Record>> recordList = new MutableLiveData<>();
-    ;
 
     public RecordListPresenter(V recordListView) {
         onAttach(recordListView);

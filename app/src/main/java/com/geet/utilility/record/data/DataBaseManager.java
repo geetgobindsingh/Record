@@ -32,6 +32,7 @@ public class DataBaseManager {
 
     private void initializeAppDatabase() {
         appDatabase = Room.databaseBuilder(RecordApp.getAppContext(), AppDatabase.class, AppDatabase.DATABASE_NAME).build();
+        //appDatabase = Room.inMemoryDatabaseBuilder(RecordApp.getAppContext(), AppDatabase.class).build();
     }
 
     public void saveRecord(Record record) {
