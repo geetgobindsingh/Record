@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.amitshekhar.DebugDB;
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
@@ -57,7 +58,7 @@ public class RequestHandler {
     private final Context mContext;
     private final Gson mGson;
     private final AssetManager mAssets;
-    private boolean isDbOpened;
+    private boolean isDbOpened, isInMemoryDbOpened;
     private SQLiteDatabase mDatabase;
     private HashMap<String, File> mDatabaseFiles;
     private HashMap<String, File> mCustomDatabaseFiles;
@@ -99,11 +100,11 @@ public class RequestHandler {
             if (route.startsWith("getDbList")) {
                 final String response = getDBListResponse();
                 bytes = response.getBytes();
-            } else if (route.startsWith("getAllDataFromTheTable")) {
-                final String response = getAllDataFromTheTableResponse(route);
-                bytes = response.getBytes();
             } else if (route.startsWith("getTableList")) {
                 final String response = getTableListResponse(route);
+                bytes = response.getBytes();
+            } else if (route.startsWith("getAllDataFromTheTable")) {
+                final String response = getAllDataFromTheTableResponse(route);
                 bytes = response.getBytes();
             } else if (route.startsWith("addTableData")) {
                 final String response = addTableDataAndGetResponse(route);
@@ -190,6 +191,11 @@ public class RequestHandler {
             }
         }
         response.rows.add(Constants.APP_SHARED_PREFERENCES);
+
+        if (DebugDB.getRoomInMemoryDatabase() != null) {
+            response.rows.add(DebugDB.ROOM_IN_MEMORY_DB);
+        }
+
         response.isSuccessful = true;
         return mGson.toJson(response);
     }
@@ -207,6 +213,13 @@ public class RequestHandler {
         if (isDbOpened) {
             String sql = "SELECT * FROM " + tableName;
             response = DatabaseHelper.getTableData(mDatabase, sql, tableName);
+        } if (isInMemoryDbOpened) {
+            String sql = "SELECT * FROM " + tableName;
+            if (DebugDB.getRoomInMemoryDatabase() != null) {
+                response = DatabaseHelper.getTableData(sql, tableName);
+            } else {
+                response = null;
+            }
         } else {
             response = PrefHelper.getAllPrefData(mContext, tableName);
         }
@@ -264,6 +277,13 @@ public class RequestHandler {
             response = PrefHelper.getAllPrefTableName(mContext);
             closeDatabase();
             mSelectedDatabase = Constants.APP_SHARED_PREFERENCES;
+        } else if (DebugDB.ROOM_IN_MEMORY_DB.equals(database)) {
+            if (DebugDB.getRoomInMemoryDatabase() != null && DebugDB.getRoomInMemoryDatabase().isOpen()) {
+                response = DatabaseHelper.getAllTableName();
+                isInMemoryDbOpened = true;
+            } else {
+                response = null;
+            }
         } else {
             openDatabase(database);
             response = DatabaseHelper.getAllTableName(mDatabase);

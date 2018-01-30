@@ -19,7 +19,9 @@
 
 package com.amitshekhar;
 
+import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.amitshekhar.server.ClientServer;
@@ -37,8 +39,10 @@ public class DebugDB {
 
     private static final String TAG = DebugDB.class.getSimpleName();
     private static final int DEFAULT_PORT = 8080;
+    public static final String ROOM_IN_MEMORY_DB = "ROOM_IN_MEMORY_DB";
     private static ClientServer clientServer;
     private static String addressLog = "not available";
+    private static RoomDatabase roomInMemoryDatabase = null;
 
     private DebugDB() {
         // This class in not publicly instantiable
@@ -59,6 +63,15 @@ public class DebugDB {
         clientServer.start();
         addressLog = NetworkUtils.getAddressLog(context, portNumber);
         Log.d(TAG, addressLog);
+    }
+
+    public static void setInMemoryRoomDatabase(RoomDatabase appDatabase) {
+        roomInMemoryDatabase = appDatabase;
+    }
+
+    @Nullable
+    public static RoomDatabase getRoomInMemoryDatabase() {
+        return roomInMemoryDatabase;
     }
 
     public static String getAddressLog() {

@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.amitshekhar.DebugDB;
 import com.amitshekhar.model.Response;
 import com.amitshekhar.model.RowDataRequest;
 import com.amitshekhar.model.TableDataResponse;
@@ -57,6 +58,25 @@ public class DatabaseHelper {
         response.isSuccessful = true;
         try {
             response.dbVersion = database.getVersion();
+        } catch (Exception ignore) {
+
+        }
+        return response;
+    }
+
+    public static Response getAllTableName() {
+        Response response = new Response();
+        Cursor c = DebugDB.getRoomInMemoryDatabase().getOpenHelper().getReadableDatabase().rawQuery("SELECT name FROM sqlite_master WHERE type='table' OR type='view'", null);
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                response.rows.add(c.getString(0));
+                c.moveToNext();
+            }
+        }
+        c.close();
+        response.isSuccessful = true;
+        try {
+            response.dbVersion = DebugDB.getRoomInMemoryDatabase().getOpenHelper().getReadableDatabase().getVersion();
         } catch (Exception ignore) {
 
         }
@@ -169,6 +189,112 @@ public class DatabaseHelper {
     }
 
 
+
+    public static TableDataResponse getTableData(String selectQuery, String tableName) {
+
+        TableDataResponse tableData = new TableDataResponse();
+        tableData.isSelectQuery = true;
+        if (tableName == null) {
+            tableName = getTableName(selectQuery);
+        }
+
+        final String quotedTableName = getQuotedTableName(tableName);
+
+        if (tableName != null) {
+            final String pragmaQuery = "PRAGMA table_info(" + quotedTableName + ")";
+            tableData.tableInfos = getTableInfo(pragmaQuery);
+        }
+        Cursor cursor = null;
+        boolean isView = false;
+        try {
+            cursor = DebugDB.getRoomInMemoryDatabase().getOpenHelper().getReadableDatabase().rawQuery("SELECT type FROM sqlite_master WHERE name=?",
+                    new String[]{quotedTableName});
+            if (cursor.moveToFirst()) {
+                isView = "view".equalsIgnoreCase(cursor.getString(0));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        tableData.isEditable = tableName != null && tableData.tableInfos != null && !isView;
+
+
+        if (!TextUtils.isEmpty(tableName)) {
+            selectQuery = selectQuery.replace(tableName, quotedTableName);
+        }
+
+        try {
+            cursor = DebugDB.getRoomInMemoryDatabase().getOpenHelper().getReadableDatabase().rawQuery(selectQuery, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            tableData.isSuccessful = false;
+            tableData.errorMessage = e.getMessage();
+            return tableData;
+        }
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+            // setting tableInfo when tableName is not known and making
+            // it non-editable also by making isPrimary true for all
+            if (tableData.tableInfos == null) {
+                tableData.tableInfos = new ArrayList<>();
+                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                    TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
+                    tableInfo.title = cursor.getColumnName(i);
+                    tableInfo.isPrimary = true;
+                    tableData.tableInfos.add(tableInfo);
+                }
+            }
+
+            tableData.isSuccessful = true;
+            tableData.rows = new ArrayList<>();
+            if (cursor.getCount() > 0) {
+
+                do {
+                    List<TableDataResponse.ColumnData> row = new ArrayList<>();
+                    for (int i = 0; i < cursor.getColumnCount(); i++) {
+                        TableDataResponse.ColumnData columnData = new TableDataResponse.ColumnData();
+                        switch (cursor.getType(i)) {
+                            case Cursor.FIELD_TYPE_BLOB:
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = ConverterUtils.blobToString(cursor.getBlob(i));
+                                break;
+                            case Cursor.FIELD_TYPE_FLOAT:
+                                columnData.dataType = DataType.REAL;
+                                columnData.value = cursor.getDouble(i);
+                                break;
+                            case Cursor.FIELD_TYPE_INTEGER:
+                                columnData.dataType = DataType.INTEGER;
+                                columnData.value = cursor.getLong(i);
+                                break;
+                            case Cursor.FIELD_TYPE_STRING:
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
+                                break;
+                            default:
+                                columnData.dataType = DataType.TEXT;
+                                columnData.value = cursor.getString(i);
+                        }
+                        row.add(columnData);
+                    }
+                    tableData.rows.add(row);
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return tableData;
+        } else {
+            tableData.isSuccessful = false;
+            tableData.errorMessage = "Cursor is null";
+            return tableData;
+        }
+
+    }
+
     private static String getQuotedTableName(String tableName) {
         return String.format("[%s]", tableName);
     }
@@ -178,6 +304,52 @@ public class DatabaseHelper {
         Cursor cursor;
         try {
             cursor = db.rawQuery(pragmaQuery, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        if (cursor != null) {
+
+            List<TableDataResponse.TableInfo> tableInfoList = new ArrayList<>();
+
+            cursor.moveToFirst();
+
+            if (cursor.getCount() > 0) {
+                do {
+                    TableDataResponse.TableInfo tableInfo = new TableDataResponse.TableInfo();
+
+                    for (int i = 0; i < cursor.getColumnCount(); i++) {
+
+                        final String columnName = cursor.getColumnName(i);
+
+                        switch (columnName) {
+                            case Constants.PK:
+                                tableInfo.isPrimary = cursor.getInt(i) == 1;
+                                break;
+                            case Constants.NAME:
+                                tableInfo.title = cursor.getString(i);
+                                break;
+                            default:
+                        }
+
+                    }
+                    tableInfoList.add(tableInfo);
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            return tableInfoList;
+        }
+        return null;
+    }
+
+
+    private static List<TableDataResponse.TableInfo> getTableInfo(String pragmaQuery) {
+
+        Cursor cursor;
+        try {
+            cursor = DebugDB.getRoomInMemoryDatabase().getOpenHelper().getReadableDatabase().rawQuery(pragmaQuery, null);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
